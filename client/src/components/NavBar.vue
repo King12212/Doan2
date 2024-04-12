@@ -6,6 +6,7 @@
       :key="item.id"
       @mouseover="handleOver(item.id)"
       @mouseleave="handleLeave(item.id)"
+      @click="this.handleClickItem(item.id)"
     >
       {{ item.title }}
       <div class="list" v-if="item.isHover">
@@ -67,9 +68,19 @@ export default {
   },
   methods: {
     handleClick(i) {
-      if (i !== "Đăng xuất") return;
-      localStorage.setItem("user", "false");
-      this.$router.push("/login");
+      if (i !== "Đăng xuất" && i !== "Điểm danh") return;
+      if (i === "Đăng xuất") {
+        localStorage.setItem("user", "false");
+        this.$router.push("/login");
+        return;
+      }
+      this.$router.push("/diemdanh");
+    },
+    handleClickItem(i) {
+      if (i !== 0) {
+        return;
+      }
+      this.$router.push("/");
     },
   },
 };
@@ -83,7 +94,9 @@ export default {
   width: 100vw;
   height: 100px;
   /* border: 1px solid black; */
-  background-color: aquamarine;
+  background-color: rgb(30, 25, 57);
+  color: whitesmoke;
+  z-index: 100px;
 }
 .item {
   cursor: pointer;
@@ -94,7 +107,7 @@ export default {
   justify-content: center;
 }
 .item:hover {
-  background-color: aqua;
+  background-color: rgb(119, 136, 153);
   color: brown;
 }
 .list {
@@ -106,6 +119,10 @@ export default {
   top: 100px;
   flex-direction: column;
   width: 200px;
+  color: black;
+  border-radius: 5px;
+  box-shadow: rgba(99, 99, 99, 0.2) 0px 0px 8px 0px;
+  z-index: 100;
 }
 .i {
   height: 50px;
@@ -113,8 +130,13 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
-  border-bottom: 1px solid lightblue;
-  border-left: 1px solid lightblue;
-  border-right: 1px solid lightblue;
+  /* border-bottom: 1px solid black;
+  border-left: 1px solid black;
+  border-right: 1px solid black; */
+}
+.i:hover {
+  color: brown;
+  background-color: beige;
+  opacity: 80%;
 }
 </style>

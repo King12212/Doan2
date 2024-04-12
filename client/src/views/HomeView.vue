@@ -6,7 +6,8 @@ import NavBar from "../components/NavBar.vue";
 <template>
   <main>
     <NavBar id="navbar" />
-    <button class="logout" @click="logout">Log out</button>
+    <!-- <button class="logout" @click="logout">Log out</button> -->
+    <div>Đây là trang chủ</div>
   </main>
 </template>
 <script>
