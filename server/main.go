@@ -3,11 +3,12 @@ package main
 import (
 	"context"
 	// "fmt"
-	"github.com/gin-contrib/cors"
 	"log"
 	"myproject/function"
 	"myproject/model"
 	"strconv"
+
+	"github.com/gin-contrib/cors"
 
 	"cloud.google.com/go/firestore"
 	"github.com/gin-gonic/gin"
@@ -26,15 +27,11 @@ func main() {
 	defer client.Close()
 	r := gin.Default()
 	r.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"https://foo.com"},
-		AllowMethods:     []string{"PUT", "PATCH"},
-		AllowHeaders:     []string{"Origin"},
-		ExposeHeaders:    []string{"Content-Length"},
+		AllowOrigins:     []string{"http://localhost:5173"},
+		AllowMethods:     []string{"PUT", "POST", "GET", "DELETE"},
+		AllowHeaders:     []string{"Content-Type", "Content-Length", "Accept-Encoding"},
+		ExposeHeaders:    []string{"Content-Length", "Content-Type"},
 		AllowCredentials: true,
-		// AllowOriginFunc: func(origin string) bool {
-		//   return origin == "https://github.com"
-		// },
-		// MaxAge: 12 * time.Hour,
 	}))
 	r.POST("/login", func(c *gin.Context) {
 		if err := function.Login(c, client); err != nil {

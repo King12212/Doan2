@@ -68,7 +68,10 @@ export default {
   },
   methods: {
     handleClick(i) {
-      if (i !== "Đăng xuất" && i !== "Điểm danh") return;
+      if (i !== "Đăng xuất" && i !== "Điểm danh") {
+        console.log("a");
+        return;
+      }
       if (i === "Đăng xuất") {
         localStorage.setItem("user", "false");
         this.$router.push("/login");
@@ -96,7 +99,7 @@ export default {
   /* border: 1px solid black; */
   background-color: rgb(30, 25, 57);
   color: whitesmoke;
-  z-index: 100px;
+  z-index: 100;
 }
 .item {
   cursor: pointer;
@@ -123,6 +126,7 @@ export default {
   border-radius: 5px;
   box-shadow: rgba(99, 99, 99, 0.2) 0px 0px 8px 0px;
   z-index: 100;
+  background-color: aliceblue;
 }
 .i {
   height: 50px;
@@ -137,6 +141,5 @@ export default {
 .i:hover {
   color: brown;
   background-color: beige;
-  opacity: 80%;
 }
 </style>

@@ -1,7 +1,21 @@
 <template>
   <main>
     <NavBar class="navbar" />
-    <div class="body">
+    <div
+      class="body"
+      @click="
+        (event) => {
+          const a = document.getElementsById('more');
+          if (event.targer === a) {
+            console.log('a');
+            return;
+          } else {
+            console.log(state.choose);
+            state.choose = -1;
+          }
+        }
+      "
+    >
       <div class="title">Danh sách lớp</div>
       <div class="classlist">
         <div
@@ -13,7 +27,7 @@
             }
           "
         >
-          Lớp CC01
+          Lớp DD01
         </div>
         <div
           class="item"
@@ -24,7 +38,7 @@
             }
           "
         >
-          Lớp CC02
+          Lớp DD02
         </div>
         <div
           class="item"
@@ -35,7 +49,7 @@
             }
           "
         >
-          Lớp CC03
+          Lớp DD03
         </div>
         <div
           class="item"
@@ -46,17 +60,25 @@
             }
           "
         >
-          Lớp CC04
+          Lớp DD04
         </div>
       </div>
       <input class="search" placeholder="Tìm kiếm" />
-      <span class="material-symbols-outlined"> search </span>
+      <span class="material-symbols-outlined" id="search"> search </span>
       <div class="bar">
         <div class="name">Sinh viên</div>
         <div class="id">Mã số</div>
       </div>
       <div class="table">
-        <div v-for="item in state.student_list" :key="item" class="student">
+        <div
+          v-for="item in state.student_list"
+          :key="item"
+          class="student"
+          :class="{
+            first: state.student_list.indexOf(item) === 0,
+            choose: state.pop === state.student_list.indexOf(item),
+          }"
+        >
           <div class="ava"></div>
           <div class="info">
             <div class="ten">
@@ -66,7 +88,20 @@
             <div class="mail">huy.nguyen123@hcmut.edu.vn</div>
           </div>
           <div class="stid">{{ item.studentid }}</div>
-          <div class="btn"></div>
+          <div class="last">
+            <span
+              class="material-symbols-outlined"
+              id="more"
+              @click="choose(state.student_list.indexOf(item))"
+            >
+              more_vert
+            </span>
+            <table-more-vue
+              class="tablemore"
+              v-if="state.pop === state.student_list.indexOf(item)"
+              v-on:view="handleView(item)"
+            />
+          </div>
         </div>
       </div>
     </div>
@@ -75,18 +110,66 @@
 <script>
 import NavBar from "../components/NavBar.vue";
 import { reactive } from "vue";
+import TableMoreVue from "../components/TableMore.vue";
+import axios from "axios";
 export default {
-  components: { NavBar },
+  components: { NavBar, TableMoreVue },
   setup() {
     const state = reactive({
-      student_list: [
-        { firstname: "Le", lastname: "Khoi", studentid: "2053151" },
-        { firstname: "Le", lastname: "Huy", studentid: "2053152" },
-        { firstname: "Le", lastname: "Minh", studentid: "2053153" },
-      ],
+      student_list: [{ firstname: "", lastname: "", studentid: "" }],
       class: 0,
+      pop: -1,
     });
-    return { state };
+    const choose = (i) => {
+      if (state.pop === i) {
+        state.pop = -1;
+        return;
+      }
+      state.pop = i;
+    };
+    const listener = (e) => {
+      if (e.target.id !== "more" && state.pop !== -1) {
+        state.pop = -1;
+        // let a = document.querySelector(".drop_down");
+        // if (!a.contains(e.target)) {
+        //   let b = document.querySelector(".container");
+        //   if (b === null || !b.contains(e.target))
+        //   state.pop = -1;
+        // }
+      }
+    };
+    return { state, choose, listener };
+  },
+  async created() {
+    try {
+      axios.defaults.withCredentials = true;
+      const response = await axios.get("http://localhost:8080/getAllStudent");
+      console.log(response.data.data);
+      const lst = response.data.data;
+      for (var i = 0; i < 6; i++) {
+        var obj = {
+          firstname: lst[i].firstname,
+          lastname: lst[i].lastname,
+          studentid: lst[i].studentID,
+        };
+        this.state.student_list.push(obj);
+      }
+      this.state.student_list.splice(0, 1);
+    } catch (e) {
+      console.log(e);
+    }
+  },
+  mounted() {
+    window.addEventListener("click", this.listener);
+  },
+  beforeUnmount() {
+    window.removeEventListener("click", this.listener);
+  },
+  methods: {
+    handleView(item) {
+      localStorage.setItem("ten", item.firstname + " " + item.lastname);
+      this.$router.push(`/xem/${item.studentid}`);
+    },
   },
 };
 </script>
@@ -102,7 +185,6 @@ export default {
   position: fixed;
   top: 200px;
   left: 0;
-  z-index: 0;
 }
 .classlist {
   position: fixed;
@@ -158,6 +240,8 @@ export default {
 }
 .material-symbols-outlined {
   font-variation-settings: "FILL" 0, "wght" 600, "GRAD" 40, "opsz" 48;
+}
+#search {
   font-size: 40px;
   position: fixed;
   top: 140px;
@@ -197,6 +281,12 @@ export default {
   border-top: 1px solid lightgrey;
   height: 70px;
 }
+.student.first {
+  border-top: 5px solid black;
+}
+.student.choose {
+  background-color: rgb(240, 240, 240);
+}
 .ava {
   border-radius: 50%;
   width: 60px;
@@ -225,12 +315,32 @@ export default {
   font-size: 16px;
   height: 35px;
   border: 2px solid lightgrey;
-  border-radius: 10px;
+  border-radius: 35px;
   display: flex;
   justify-content: center;
   align-items: center;
 }
 .id {
   margin-left: 55px;
+}
+.last {
+  margin-left: 250px;
+  cursor: pointer;
+  position: fixed;
+  margin-left: 750px;
+  margin-top: 500px;
+  width: 100px;
+  height: 100px;
+  z-index: 0;
+}
+#more {
+  position: fixed;
+  margin-top: -213px;
+  z-index: 20;
+  font-size: 30px;
+  margin-left: 25px;
+}
+.tablemore {
+  position: fixed;
 }
 </style>

@@ -29,6 +29,11 @@ const router = createRouter({
       path: "/diemdanh",
       name: 'diemdanh',
       component: () => import('../views/Diemdanh.vue')
+    },
+    {
+      path: "/xem/:id",
+      name: 'xem',
+      component: () => import('../views/Xem.vue')
     }
   ]
 })
